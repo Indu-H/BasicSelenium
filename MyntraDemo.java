@@ -24,10 +24,8 @@ public class MyntraDemo {
 
 		Thread.sleep(3000);
 
-		// 3. Click wishlist on first product
-		//WebElement wishlist = driver.findElement(By.xpath("//li[@id='42849106']//span[contains(@class,'product-wishlist')]"));
-		//driver.findElement(By.xpath("//li[@id='42849106']//span[contains(@class,'product-wishlist')]")).click();
-		driver.findElement(By.xpath("(//span[contains(@class,'product-wishlist')])[1]")).click(); //(//span[contains(@class,'product-wishlist')])[1]
+		driver.findElement(By.xpath("(//span[text()='wishlist'])[1]")).click();
+		//(//span[contains(@class,'product-wishlist')])[1]
 		//wishlist.click();
 
 		Thread.sleep(2000);
