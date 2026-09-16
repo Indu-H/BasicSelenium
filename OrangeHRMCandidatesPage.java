@@ -1,206 +1,172 @@
 package PomUtilities;
 
+import java.time.Duration;
+import java.util.List;
+
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.Keys;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
 public class OrangeHRMCandidatesPage {
 
     WebDriver driver;
+    WebDriverWait wait;
 
     public OrangeHRMCandidatesPage(WebDriver driver) {
-
         this.driver = driver;
-
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(20));
         PageFactory.initElements(driver, this);
     }
 
+    // JOB TITLE
+    @FindBy(xpath = "(//div[contains(@class,'oxd-select-text--after')])[1]")
+    private WebElement jobTitleDropdown;
 
-    // =====================================================
+    // VACANCY
+    @FindBy(xpath = "(//div[contains(@class,'oxd-select-text--after')])[2]")
+    private WebElement vacancyDropdown;
+
+    // HIRING MANAGER
+    @FindBy(xpath = "(//div[contains(@class,'oxd-select-text--after')])[3]")
+    private WebElement hiringManagerDropdown;
+
+    // STATUS
+    @FindBy(xpath = "(//div[contains(@class,'oxd-select-text--after')])[4]")
+    private WebElement statusDropdown;
+
     // CANDIDATE NAME
-    // =====================================================
-
     @FindBy(xpath = "//input[@placeholder='Type for hints...']")
     private WebElement candidateName;
 
-
-    // =====================================================
-    // APPLICATION DATE
-    // =====================================================
-
-    public void getDateOfApplication(String value)
-    {
-        WebElement applicationDate = driver.findElement(
-                By.xpath("//label[normalize-space()='Date of Application']/ancestor::div[contains(@class,'oxd-input-group')]//input")
-        );
-
-        JavascriptExecutor js = (JavascriptExecutor) driver;
-
-        js.executeScript("arguments[0].value='';", applicationDate);
-
-        applicationDate.sendKeys(value);
-    }
-    // =====================================================
     // SEARCH BUTTON
-    // =====================================================
-
-    @FindBy(xpath = "//button[text()=' Search ']")
+    @FindBy(xpath = "//button[normalize-space()='Search']")
     private WebElement searchButton;
 
 
-    // =====================================================
     // JOB TITLE
-    // =====================================================
+    public void getJobTitle(String value) {
 
-    public void getJobTitle(String value)
-    {
-        WebElement jobTitleDropdown = driver.findElement(
-                By.xpath(
-                        "//label[normalize-space()='Job Title']/ancestor::div[contains(@class,'oxd-input-group')]//div[contains(@class,'oxd-select-text')]"
-                )
-        );
-
+        wait.until(ExpectedConditions.elementToBeClickable(jobTitleDropdown));
         jobTitleDropdown.click();
 
-        WebElement jobTitleOption = driver.findElement(
-                By.xpath(
-                        "//div[contains(@class,'oxd-select-option')][normalize-space()='" + value + "']"
-                )
+        By option = By.xpath(
+            "//div[contains(@class,'oxd-select-option')]//*[normalize-space()='" + value + "']"
         );
 
-        jobTitleOption.click();
+        wait.until(ExpectedConditions.elementToBeClickable(option)).click();
     }
 
-    // =====================================================
-    // VACANCY
-    // =====================================================
 
+    // VACANCY
     public void getVacancy(String value) {
 
-        WebElement vacancyDropdown = driver.findElement(
-                By.xpath(
-                        "(//div[contains(@class,'oxd-select-text--after')])[2]"
-                )
-        );
-
+        wait.until(ExpectedConditions.elementToBeClickable(vacancyDropdown));
         vacancyDropdown.click();
 
-        WebElement vacancyOption = driver.findElement(
-                By.xpath(
-                        "//div[@role='listbox']//span[normalize-space()='" +
-                        value +
-                        "']"
-                )
+        By option = By.xpath(
+            "//div[contains(@class,'oxd-select-option')]//*[normalize-space()='" + value + "']"
         );
 
-        vacancyOption.click();
+        wait.until(ExpectedConditions.elementToBeClickable(option)).click();
     }
 
 
-    // =====================================================
     // HIRING MANAGER
-    // =====================================================
-
     public void getHiringManager(String value) {
 
-        WebElement hiringManagerDropdown = driver.findElement(
-                By.xpath("(//div[contains(@class,'oxd-select-text--after')])[3]")
-        );
-
+        wait.until(ExpectedConditions.elementToBeClickable(hiringManagerDropdown));
         hiringManagerDropdown.click();
 
-        WebElement hiringManagerOption = driver.findElement(
-                By.xpath("//div[normalize-space(.)='" + value + "']")
+        By option = By.xpath(
+            "//div[contains(@class,'oxd-select-option')]//*[normalize-space()='" + value + "']"
         );
 
-        hiringManagerOption.click();
+        wait.until(ExpectedConditions.elementToBeClickable(option)).click();
     }
-    // =====================================================
-    // STATUS
-    // =====================================================
 
+
+    // STATUS
     public void getStatus(String value) {
 
-        WebElement statusDropdown = driver.findElement(
-                By.xpath(
-                        "(//div[contains(@class,'oxd-select-text--after')])[4]"
-                )
-        );
-
+        wait.until(ExpectedConditions.elementToBeClickable(statusDropdown));
         statusDropdown.click();
 
-        WebElement statusOption = driver.findElement(
-                By.xpath(
-                        "//div[@role='listbox']//span[normalize-space()='" +
-                        value +
-                        "']"
-                )
+        By option = By.xpath(
+            "//div[contains(@class,'oxd-select-option')]//*[normalize-space()='" + value + "']"
         );
 
-        statusOption.click();
+        wait.until(ExpectedConditions.elementToBeClickable(option)).click();
     }
 
 
-    // =====================================================
     // CANDIDATE NAME
-    // =====================================================
-
     public void getCandidateName(String value) {
 
+        wait.until(ExpectedConditions.elementToBeClickable(candidateName));
+
+        candidateName.click();
+        candidateName.clear();
         candidateName.sendKeys(value);
-    }
 
+        // Give OrangeHRM time to process the typed candidate name
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
 
-    // =====================================================
-    // APPLICATION DATE
-    // =====================================================
-
-    public void getApplicationDate(String value)
-    {
-        WebElement applicationDate = driver.findElement(
-                By.xpath("//label[normalize-space()='Date of Application']/ancestor::div[contains(@class,'oxd-input-group')]//input")
+        /*
+         * Candidate Name is an autocomplete field.
+         * If OrangeHRM gives an exact matching option, click it.
+         * If it does not give an option, continue to Search.
+         */
+        List<WebElement> options = driver.findElements(
+            By.xpath(
+                "//div[contains(@class,'oxd-autocomplete-option')]"
+                + "//*[normalize-space()='" + value + "']"
+            )
         );
 
-        applicationDate.click();
+        if (!options.isEmpty()) {
 
-        applicationDate.sendKeys(Keys.CONTROL, "a");
+            for (WebElement option : options) {
 
-        applicationDate.sendKeys(Keys.BACK_SPACE);
-
-        applicationDate.sendKeys(value);
+                if (option.isDisplayed()) {
+                    option.click();
+                    break;
+                }
+            }
+        }
     }
 
-    
-    // SEARCH
-    
 
+    // SEARCH BUTTON
     public void getSearchButton() {
 
+        wait.until(ExpectedConditions.elementToBeClickable(searchButton));
         searchButton.click();
     }
 
 
-    
     // VERIFY CANDIDATE
-    
+    public boolean verifyCandidate(String value) {
 
-    public boolean verifyCandidate(String candidateNameValue) {
+        By candidate = By.xpath(
+            "//div[contains(@class,'oxd-table-card')]//*[normalize-space()='" + value + "']"
+        );
 
         try {
 
-            WebElement candidate = driver.findElement(
-                    By.xpath(
-                            "//div[contains(@class,'oxd-table-card')]" +
-                            "//*[normalize-space()='" +
-                            candidateNameValue +
-                            "']"
-                    )
-            );
+            wait.until(ExpectedConditions.visibilityOfElementLocated(candidate));
 
-            return candidate.isDisplayed();
+            List<WebElement> candidates =
+                driver.findElements(candidate);
+
+            return !candidates.isEmpty();
 
         } catch (Exception e) {
 
