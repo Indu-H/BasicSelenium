@@ -1,10 +1,11 @@
 package PomImplementation;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.Duration;
-import java.util.Properties;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -13,8 +14,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
-
-import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.chrome.ChromeOptions;
 
 import PomUtilities.OrangeHRMCandidatesPage;
 import PomUtilities.OrangeHRMHomePage;
@@ -23,300 +23,339 @@ import PomUtilities.OrangeHRMRecruitmentPage;
 
 public class OrangeHRMPomImplementation {
 
-	public static void main(String[] args) throws EncryptedDocumentException, IOException, InterruptedException 
-	{
-		
-		        // PROPERTY FILE
-		        
+    public static void main(String[] args) throws IOException, InterruptedException {
 
-		        FileInputStream propFis =
-		                new FileInputStream("src/test/resources/DDT/Day7OrangeHRM.properties");
 
-		        Properties prop = new Properties();
+        // ============================================================
+        // PROPERTY FILE
+        // ============================================================
 
-		        prop.load(propFis);
+        FileInputStream propertyFile = new FileInputStream(
 
+                "./src/test/resources/DDT/Day7OrangeHRM.properties"
+        );
 
-		        // =====================================================
-		        // COMMON DATA FROM PROPERTY FILE
-		        // =====================================================
 
-		        String url = prop.getProperty("url");
+        java.util.Properties properties = new java.util.Properties();
 
-		        String browser = prop.getProperty("browser");
+        properties.load(propertyFile);
 
-		        String loginUsername = prop.getProperty("username");
 
-		        String loginPassword = prop.getProperty("password");
+        String url = properties.getProperty("url");
 
-		        String resumePath = prop.getProperty("resumePath");
+        String username = properties.getProperty("username");
 
+        String password = properties.getProperty("password");
 
-		        // =====================================================
-		        // EXCEL FILE
-		        // =====================================================
+        String resumePath = properties.getProperty("resumePath");
 
-		        FileInputStream excelFis =
-		                new FileInputStream("src/test/resources/DDT/OrangeHRMRecruitment.xlsx");
 
-		        Workbook wb = WorkbookFactory.create(excelFis);
+        propertyFile.close();
 
-		        Sheet sh = wb.getSheet("Sheet1");
 
-		        Row row = sh.getRow(1);
 
-		        DataFormatter formatter = new DataFormatter();
+        // ============================================================
+        // EXCEL FILE
+        // ============================================================
 
+        FileInputStream excelFile = new FileInputStream(
 
-		        // =====================================================
-		        // TEST DATA FROM EXCEL
-		        // =====================================================
+                "./src/test/resources/DDT/OrangeHRMRecruitment.xlsx"
+        );
 
-		        String firstName =
-		                formatter.formatCellValue(row.getCell(1));
 
-		        String middleName =
-		                formatter.formatCellValue(row.getCell(2));
+        Workbook workbook = WorkbookFactory.create(excelFile);
 
-		        String lastName =
-		                formatter.formatCellValue(row.getCell(3));
+        Sheet sheet = workbook.getSheetAt(0);
 
-		        String vacancy =
-		                formatter.formatCellValue(row.getCell(4));
+        Row row = sheet.getRow(1);
 
-		        String email =
-		                formatter.formatCellValue(row.getCell(5));
+        DataFormatter formatter = new DataFormatter();
 
-		        String contactNumber =
-		                formatter.formatCellValue(row.getCell(6));
 
-		        String dateOfApplication =
-		                formatter.formatCellValue(row.getCell(7));
 
-		        String jobTitle =
-		                formatter.formatCellValue(row.getCell(8));
+        // ============================================================
+        // READ EXCEL DATA
+        // ============================================================
 
-		        String searchVacancy =
-		                formatter.formatCellValue(row.getCell(9));
+        String firstName = formatter.formatCellValue(
+                row.getCell(1)
+        );
 
-		        String hiringManager =
-		                formatter.formatCellValue(row.getCell(10));
 
-		        String status =
-		                formatter.formatCellValue(row.getCell(11));
+        String middleName = formatter.formatCellValue(
+                row.getCell(2)
+        );
 
-		        String candidateName =
-		                formatter.formatCellValue(row.getCell(12));
 
-		        String applicationDate =
-		                formatter.formatCellValue(row.getCell(13));
+        String lastName = formatter.formatCellValue(
+                row.getCell(3)
+        );
 
 
-		        // =====================================================
-		        // LAUNCH BROWSER
-		        // =====================================================
+        String vacancy = formatter.formatCellValue(
+                row.getCell(4)
+        );
 
-		        WebDriver driver;
 
-		        if (browser.equalsIgnoreCase("chrome")) {
+        String email = formatter.formatCellValue(
+                row.getCell(5)
+        );
 
-		            driver = new ChromeDriver();
 
-		        } else {
+        String contactNumber = formatter.formatCellValue(
+                row.getCell(6)
+        );
 
-		            driver = new ChromeDriver();
-		        }
 
+        String jobTitle = formatter.formatCellValue(
+                row.getCell(7)
+        );
 
-		        driver.manage().window().maximize();
 
-		        driver.manage()
-		                .timeouts()
-		                .implicitlyWait(Duration.ofSeconds(10));
+        String searchVacancy = formatter.formatCellValue(
+                row.getCell(8)
+        );
 
 
-		        WebDriverWait wait =
-		                new WebDriverWait(
-		                        driver,
-		                        Duration.ofSeconds(20)
-		                );
+        String hiringManager = formatter.formatCellValue(
+                row.getCell(9)
+        );
 
 
-		        // =====================================================
-		        // OPEN ORANGEHRM
-		        // =====================================================
+        String status = formatter.formatCellValue(
+                row.getCell(10)
+        );
 
-		        driver.get(url);
 
+        String candidateName = formatter.formatCellValue(
+                row.getCell(11)
+        );
 
-		        // =====================================================
-		        // LOGIN PAGE OBJECT
-		        // =====================================================
 
-		        OrangeHRMLoginPage loginPage =
-		                new OrangeHRMLoginPage(driver);
 
+        // ============================================================
+        // CHROME SETTINGS
+        // ============================================================
 
-		        loginPage.getUsername(loginUsername);
+        ChromeOptions settings = new ChromeOptions();
 
-		        loginPage.getPassword(loginPassword);
+        Map<String, Object> prefs = new HashMap<>();
 
-		        loginPage.getLoginButton();
 
+        prefs.put(
+                "profile.password_manager_leak_detection",
+                false
+        );
 
-		        // =====================================================
-		        // HOME PAGE OBJECT
-		        // =====================================================
 
-		        OrangeHRMHomePage homePage =
-		                new OrangeHRMHomePage(driver);
+        settings.setExperimentalOption(
+                "prefs",
+                prefs
+        );
 
 
-		        homePage.getRecruitment();
 
+        // ============================================================
+        // LAUNCH BROWSER
+        // ============================================================
 
-		        // =====================================================
-		        // RECRUITMENT PAGE OBJECT
-		        // =====================================================
+        WebDriver driver = new ChromeDriver(settings);
 
-		        OrangeHRMRecruitmentPage recruitmentPage =
-		                new OrangeHRMRecruitmentPage(driver);
+        driver.manage().window().maximize();
 
 
-		        // Click Add
-		        recruitmentPage.getAddButton();
+        driver.manage().timeouts().implicitlyWait(
 
+                Duration.ofSeconds(10)
+        );
 
-		        // Enter First Name
-		        recruitmentPage.getFirstName(firstName);
 
 
-		        // Enter Middle Name
-		        recruitmentPage.getMiddleName(middleName);
+        // ============================================================
+        // OPEN ORANGEHRM
+        // ============================================================
 
+        driver.get(url);
 
-		        // Enter Last Name
-		        recruitmentPage.getLastName(lastName);
 
 
-		        // Select Vacancy
-		        recruitmentPage.getVacancy(vacancy);
+        // ============================================================
+        // LOGIN PAGE
+        // ============================================================
 
+        OrangeHRMLoginPage loginPage =
 
-		        // Enter Email
-		        recruitmentPage.getEmail(email);
+                new OrangeHRMLoginPage(driver);
 
 
-		        // Enter Contact Number
-		        recruitmentPage.getContactNumber(contactNumber);
+        loginPage.getUsername(username);
 
+        loginPage.getPassword(password);
 
-		        // Upload Resume
-		        recruitmentPage.getResume(resumePath);
+        loginPage.getLoginButton();
 
 
-		        // Date of Application
-		        recruitmentPage.getDateOfApplication(dateOfApplication);
 
+        // ============================================================
+        // HOME PAGE
+        // ============================================================
 
-		        // Save
-		        recruitmentPage.getSaveButton();
+        OrangeHRMHomePage homePage =
 
+                new OrangeHRMHomePage(driver);
 
-		        Thread.sleep(3000);
 
+        homePage.getRecruitment();
 
-		        // =====================================================
-		        // CANDIDATES PAGE
-		        // =====================================================
 
-		        recruitmentPage.getCandidates();
 
+        // ============================================================
+        // RECRUITMENT PAGE
+        // ============================================================
 
-		        Thread.sleep(2000);
+        OrangeHRMRecruitmentPage recruitmentPage =
 
+                new OrangeHRMRecruitmentPage(driver);
 
-		        OrangeHRMCandidatesPage candidatesPage =
-		                new OrangeHRMCandidatesPage(driver);
 
 
-		        // Select Job Title
-		        candidatesPage.getJobTitle(jobTitle);
+        // ============================================================
+        // ADD CANDIDATE
+        // ============================================================
 
+        recruitmentPage.clickAdd();
 
-		        // Select Vacancy
-		        candidatesPage.getVacancy(searchVacancy);
 
+        recruitmentPage.enterFirstName(firstName);
 
-		        // Select Hiring Manager
-		        candidatesPage.getHiringManager(hiringManager);
 
+        recruitmentPage.enterMiddleName(middleName);
 
-		        // Select Status
-		        candidatesPage.getStatus(status);
 
+        recruitmentPage.enterLastName(lastName);
 
-		        // Enter Candidate Name
-		        candidatesPage.getCandidateName(candidateName);
 
+        recruitmentPage.selectVacancy(vacancy);
 
-		        // Select Application Date
-		        candidatesPage.getApplicationDate(applicationDate);
 
+        recruitmentPage.enterEmail(email);
 
-		        // Click Search
-		        candidatesPage.getSearchButton();
 
+        recruitmentPage.enterContactNumber(contactNumber);
 
-		        Thread.sleep(3000);
 
+        recruitmentPage.getResume(resumePath);
 
-		        // =====================================================
-		        // VERIFY RECORDS FOUND
-		        // =====================================================
 
-		        boolean result =
-		                candidatesPage.verifyCandidate(candidateName);
 
+        // ============================================================
+        // SAVE CANDIDATE
+        // ============================================================
 
-		        if (result) {
+        recruitmentPage.getSaveButton();
 
-		            System.out.println(
-		                    "Candidate is added successfully and found in Records Found section."
-		            );
 
-		        } else {
+        Thread.sleep(3000);
 
-		            System.out.println(
-		                    "Candidate is NOT found in Records Found section."
-		            );
-		        }
 
 
-		        
-		        // LOGOUT
-		        
+        // ============================================================
+        // CANDIDATES PAGE
+        // ============================================================
 
-		        homePage.getUserDropdown();
+        recruitmentPage.clickCandidates();
 
-		        homePage.getLogout();
 
+        Thread.sleep(2000);
 
-		        
-		        // CLOSE
-		       
 
-		        wb.close();
 
-		        excelFis.close();
+        // ============================================================
+        // SEARCH CANDIDATE
+        // ============================================================
 
-		        propFis.close();
+        OrangeHRMCandidatesPage candidatesPage =
 
-		        //driver.quit();
-		        System.out.println("OrangeHRM Recruitment POM test completed.");
-		    }
-		
+                new OrangeHRMCandidatesPage(driver);
 
-	}
 
+        candidatesPage.getJobTitle(jobTitle);
 
+
+        candidatesPage.getVacancy(searchVacancy);
+
+
+        candidatesPage.getHiringManager(hiringManager);
+
+
+        candidatesPage.getStatus(status);
+
+
+        candidatesPage.getCandidateName(candidateName);
+
+
+        candidatesPage.getSearchButton();
+
+
+        Thread.sleep(3000);
+
+
+
+        // ============================================================
+        // VERIFY
+        // ============================================================
+
+        boolean result =
+
+                candidatesPage.verifyCandidate(candidateName);
+
+
+        if (result) {
+
+            System.out.println(
+
+                    "Candidate is found in Records Found section."
+            );
+
+        } else {
+
+            System.out.println(
+
+                    "Candidate is NOT found in Records Found section."
+            );
+        }
+
+
+
+        // ============================================================
+        // LOGOUT
+        // ============================================================
+
+        homePage.getUserDropdown();
+
+
+        homePage.getLogout();
+
+
+
+        // ============================================================
+        // CLOSE
+        // ============================================================
+
+        workbook.close();
+
+        excelFile.close();
+
+        //driver.quit();
+
+
+
+        System.out.println(
+
+                "OrangeHRM Recruitment POM test completed."
+        );
+
+    }
+
+}
