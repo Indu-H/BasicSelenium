@@ -14,6 +14,7 @@ public class OrangeHRMBuzzPage {
 
 
 WebDriver driver;
+
 WebDriverWait wait;
 
 public OrangeHRMBuzzPage(WebDriver driver) {
@@ -31,7 +32,7 @@ public OrangeHRMBuzzPage(WebDriver driver) {
 @FindBy(xpath="//div[@class='oxd-buzz-post oxd-buzz-post--active']/descendant::textarea[@class='oxd-buzz-post-input']")
 private WebElement Buzzfield;
 
-@FindBy(xpath="//div[@class='oxd-buzz-post oxd-buzz-post--active']//button[@type='submit']")
+@FindBy(xpath="//button[@type='submit']")
 private WebElement Postbutton;
 
 public void enterBuzzfield(String value) {
